@@ -92,10 +92,80 @@ To get started, include this gem using
 This gem provides the Ambit module.  This module provides several methods
 which implement nondeterministic programming.
 
-Another option is to allocate a Ambit::Generator object explicitly, instead
-of using the module-wide default.  This can be done with
+==== Choosing and Failing
+
+The central method of Ambit is Ambit::choose.
+
+Ambit::choose takes any enumerable (actually, any object which responds to
+#each) as an argument, and begins a nondeterministic generate-and-test
+process with the members of this object.
+
+Ambit::choose immediately returns the first member of the enumerable, or
+calls Ambit::fail! if the enumerable is empty:
+
+    a = Ambit::choose([1, 2, 3])
+    puts a
+<em>prints "1"</em>
+
+If, later, Ambit::fail! is called, <em>computation is rewound until the
+point when Ambit::choose was last called</em>, and the next member of the
+enumerable is returned <em>from the same call to Ambit::choose</em>:
+
+    a = Ambit::choose([1, 2, 3])
+    Ambit::fail! unless a.even?
+    puts a
+<em>prints "2" (and only "2")</em>
+
+As an alternative, Ambit::assert can be used to fail if a condition holds
+-- Ambit::require will rewind to the previous invocation of Ambit::choose if
+and only if it's (single) argument is false:
+
+    a = Ambit::choose([1, 2, 3])
+    Ambit::require a.even?
+    puts a
+<em>prints "2" (and only "2")</em>
+
+Note that this call to Ambit::fail! (or Ambit::assert) can occur any amount
+of time later, and works <em>even if the function which called choose has
+since exited</em>.  Execution is still rewound as needed to allow the next
+value to be returned from the same call to Ambit::choose.
+
+Calls to Ambit::choose can be nested to arbitrary depth -- each call to
+Ambit::fail! will rewind to the <em>most recent</em> call to Ambit::choose.
+If that set of choices has already returned every member of its enumerable,
+execution is instead rewound to the previous invocation of Ambit::choose,
+and execution continues with the next choice from that invocation's
+enumerable.
+
+If all choices from all past calls to Ambit::choose have been exhausted (or
+if Ambit::fail! is called before any call to Ambit::choose), an exception of
+type Ambit::ChoicesExhausted is raised instead.
+
+==== More Than One Answer
+
+...
+
+==== Side Effects
+
+...
+
+==== Marking and Cutting
+
+...
+
+==== Private Generators
+
+In addition to using methods of the Ambit module directly, another option is
+to allocate a Ambit::Generator object explicitly.  All methods of the Ambit
+module are also available as methods of Ambit::Generator (and in fact, the
+module allocates a default Generator object to handle all calls made at the
+module level).
+
+Ambit::Generator::new can be used to allocate 
+
 
     nd = Ambit::Generator::new
+    nd.choose('a' .. 'e')
 
 each object allocated in this fashion has its own set of choices, and
 failing one will not directly affect others.  Nesting choices from different
@@ -103,27 +173,6 @@ Generators is a good way to make code confusing, however, and should be
 avoided -- this capability is mainly provided to allow multi-threaded
 programs to safely use Ambit from more than one thread (see below).
 
-==== Choosing and Failing
-
-The central method of Ambit is Ambit::choose (or Ambit::Generator#choose).
-
-Ambit::choose takes any enumerable (actually, any object which responds to
-#each) as an argument
-
-...
-
-For historical reasons, Ambit::amb and Ambit::Generator#amb are provided as
-aliases for Ambit::choose and Ambit::Generator#choose.  Likewise, for
-historical reasons, calling Ambit::amb (and Ambit::Generator#amb) with
-no arguments is equivalent to calling Ambit::fail! (or
-Ambit::Generator#fail!).
-
-This allows for a more direct translation of programs written with the *amb*
-operator discussed in *SICP* and elsewhere.
-
-==== Marking and Cutting
-
-...
 
 ==== Cleaning up
 
@@ -137,6 +186,20 @@ choice.
 Ambit::Generator#clear is provided for the same reason, but it is often
 clearer to use a new Ambit::Generator object for each unrelated set of
 nondeterministic computations.
+
+==== Compatibility
+
+For historical reasons, Ambit::amb and Ambit::Generator#amb are provided as
+aliases for Ambit::choose and Ambit::Generator#choose.  Likewise, for
+historical reasons, calling Ambit::amb (and Ambit::Generator#amb) with
+no arguments is equivalent to calling Ambit::fail! (or
+Ambit::Generator#fail!).
+
+For the same reason, Ambit::require and Ambit::Generator#require are
+provided as aliases for Ambit::assert and Ambit::Generator#assert.
+
+These aliases allow for a more direct translation of programs written with
+the *amb* operator discussed in *SICP* and elsewhere.
 
 ==== Interaction with Threading
 
