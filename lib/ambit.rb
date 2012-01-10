@@ -7,7 +7,7 @@
 
 module Ambit
 
-  VERSION = '0.10'
+  VERSION = '0.10.1'
 
   # A ChoicesExhausted exception is raised if the outermost choose invocation of
   # a Generator has run out of choices, indicating that no (more) solutions are possible.

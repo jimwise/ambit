@@ -1,3 +1,7 @@
+=== 0.10.1 / 2011-04-26
+
+* Updated repo path -- no functional change.
+
 === 0.10 / 2011-04-26
 
 * Add Ambit::unmark! and Ambit::unmark_all!, which can be used to undo the
