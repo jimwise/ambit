@@ -40,6 +40,15 @@ class TestAmbit < Test::Unit::TestCase
     end
   end
 
+  def test_clear
+    Ambit::choose(0..10)
+    Ambit::choose(0..1)
+    Ambit::clear!
+    assert_raise Ambit::ChoicesExhausted do
+      Ambit::fail!
+    end
+  end
+
   def test_mark_cut
     nd = Ambit::Generator.new
     i = 0;
