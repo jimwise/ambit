@@ -3,7 +3,7 @@
 Author::    Jim Wise  (mailto:jwise@draga.com)
 Copyright:: Copyright (c) 2011 Jim Wise
 License::   2-clause BSD-Style (see LICENSE.txt)
-URL:: https://github.com/jimwise/ruby/tree/master/ambit
+URL::       https://github.com/jimwise/ruby/tree/master/ambit
 
 == DESCRIPTION:
 
@@ -25,20 +25,18 @@ stdlib).</b>
 
 To install: 
 
-  $ gem install ambit
-
-(soon -- this is not uploaded yet!)
+    $ gem install ambit
 
 == DEVELOPERS:
 
 After checking out the source, run:
 
-  $ rake newb
+    $ rake newb
 
 This task will install any missing dependencies, run the tests/specs,
 and generate the RDoc.
 
-== SYNOPSIS
+== SYNOPSIS:
 
 === What is Nondeterministic Programming?
 
@@ -72,13 +70,13 @@ Instead of writing code ourself to try every possible combination, we
 simply proceed as if each choice was the correct one, failing if the lock
 fails to open.  In short:
 
-   first = Ambit.choose(1..10)
-   second = Ambit.choose(1..10)
-   third = Ambit.choose(1..10)
+    first = Ambit.choose(1..10)
+    second = Ambit.choose(1..10)
+    third = Ambit.choose(1..10)
 
-   Ambit.fail! unless open_lock(first, second, third)
+    Ambit.fail! unless open_lock(first, second, third)
 
-   # when we get here, lock is open!
+    # when we get here, lock is open!
 
 As our language does not actually implement knowledge of the future, this
 will still try as many combinations as are needed to find the right one --
@@ -88,8 +86,8 @@ but we can program as if it has chosen the right one on the first try!
 
 To get started, include this gem using
 
-      require 'rubygems'
-      require 'ambit
+    require 'rubygems'
+    require 'ambit
 
 This gem provides the Ambit module.  This module provides several methods
 which implement nondeterministic programming.
@@ -97,7 +95,7 @@ which implement nondeterministic programming.
 Another option is to allocate a Ambit::Generator object explicitly, instead
 of using the module-wide default.  This can be done with
 
-	nd = Ambit::Generator::new
+    nd = Ambit::Generator::new
 
 each object allocated in this fashion has its own set of choices, and
 failing one will not directly affect others.  Nesting choices from different
@@ -107,7 +105,38 @@ programs to safely use Ambit from more than one thread (see below).
 
 ==== Choosing and Failing
 
+The central method of Ambit is Ambit::choose (or Ambit::Generator#choose).
+
+Ambit::choose takes any enumerable (actually, any object which responds to
+#each) as an argument
+
+...
+
+For historical reasons, Ambit::amb and Ambit::Generator#amb are provided as
+aliases for Ambit::choose and Ambit::Generator#choose.  Likewise, for
+historical reasons, calling Ambit::amb (and Ambit::Generator#amb) with
+no arguments is equivalent to calling Ambit::fail! (or
+Ambit::Generator#fail!).
+
+This allows for a more direct translation of programs written with the *amb*
+operator discussed in *SICP* and elsewhere.
+
 ==== Marking and Cutting
+
+...
+
+==== Cleaning up
+
+Ambit::clear! can be called at any time to eliminate all outstanding choices
+on the default Generator, ending nondeterminism (and allowing any
+outstanding alternate paths of execution to be garbage collected).  This is
+most useful when a given computation is finished, so that future invocations
+of Ambit::fail! will not restart the now-finished computation with another
+choice.
+
+Ambit::Generator#clear is provided for the same reason, but it is often
+clearer to use a new Ambit::Generator object for each unrelated set of
+nondeterministic computations.
 
 ==== Interaction with Threading
 
@@ -131,44 +160,48 @@ programming in a multi-threaded program.  The two main ways to do this are:
       Thread.current[:AMB].fail!
     end
 
+    def nd_clear! 
+      Thread.current[:AMB].clear!
+    end
+
 === Longer example
 
 This solution to the N queens problem is inspired by the prolog version in
 <em>The Art of Prolog</em> by Leon Sterling and Ehud Shapiro[3], but is less
 elegant, as this is not prolog (and I am not Sterling or Shapiro).
 
-   # we want to place N queens on an NxN chess board.  Since we know no two queens
-   # can be in the same row, an array of N integers between 0 and N-1 will do to
-   # represent the placement.  Since we know no two queens can be in the same column,
-   # each number from 1 .. N will appear once in this array;  this means the solution
-   # is a permutation of 1 .. N
+    # we want to place N queens on an NxN chess board.  Since we know no two queens
+    # can be in the same row, an array of N integers between 0 and N-1 will do to
+    # represent the placement.  Since we know no two queens can be in the same column,
+    # each number from 1 .. N will appear once in this array;  this means the solution
+    # is a permutation of 1 .. N
 
-   # Here is the complete board generator.  Next is the test if a position is safe.
+    # Here is the complete board generator.  Next is the test if a position is safe.
 
-   def queens n, board = []
-     if board.size == n
-       board
-     else
-       c = Ambit.choose(1..n)
-       Ambit.fail! unless safe board, c
-       queens n, board + [c]
-     end
-   end
-
-  # board is the first M columns of an NxN board, and is valid so far.
-  # piece is a proposed piece for the M+1th row of the board.
-  # returns true if piece is a valid placement, false otherwise
-
-  def safe board, piece
-    board.each_with_index do |c, r|
-      return false if c == piece  # same column
-      # they're on the same diagonal if the distance in columns == the distance in rows
-      rdist = board.size - r;
-      cdist = (piece - c).abs
-      return false if rdist == cdist
+    def queens n, board = []
+      if board.size == n
+        board
+      else
+        c = Ambit.choose(1..n)
+        Ambit.fail! unless safe board, c
+        queens n, board + [c]
+      end
     end
-    true
-  end
+
+    # board is the first M columns of an NxN board, and is valid so far.
+    # piece is a proposed piece for the M+1th row of the board.
+    # returns true if piece is a valid placement, false otherwise
+
+    def safe board, piece
+      board.each_with_index do |c, r|
+        return false if c == piece  # same column
+        # they're on the same diagonal if the distance in columns == the distance in rows
+        rdist = board.size - r;
+        cdist = (piece - c).abs
+        return false if rdist == cdist
+      end
+      true
+    end
 
 The file examples/queens.rb, installed with this gem, contains a version of
 this with display code, and a command-line driver to print all solutions for
@@ -186,27 +219,27 @@ a given N.
 
 (The BSD 2-clause License)
 
- Copyright (c) 2011 Jim Wise
- All rights reserved.
+  Copyright (c) 2011 Jim Wise
+  All rights reserved.
 
- Redistribution and use in source and binary forms, with or without
- modification, are permitted provided that the following conditions
- are met:
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
 
- 1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
- 2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
 
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS
- BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+  TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS
+  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  POSSIBILITY OF SUCH DAMAGE.
