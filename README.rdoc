@@ -10,7 +10,7 @@ License::   2-clause BSD-Style (see LICENSE.txt)
 
 This is an all-ruby implementation of choose/fail nondeterministic
 programming with branch cut, as described in Chapter 22 of Paul Graham's
-<em>On Lisp</em>[1], Chapter, or Section 4.3 of <em>SICP</em>[2].
+<em>On Lisp</em>[1], or Section 4.3 of <em>SICP</em>[2].
 
 Due to Ruby containing a true call/cc, this is a much straighter port of
 Paul Graham's scheme version of this code than his Common Lisp or my C
@@ -41,17 +41,16 @@ and generate the RDoc.
 
 === What is Nondeterministic Programming?
 
-Nondeterministic programming is a novel approach to problems where a
-program must find a working solution out of many possible choices.  It
-greatly simplifies problems such graph searching, testing combinations of
-values, and so on, where there are many possible values to consider, often
-in some sort of hierarchical order, but the right combination is not known
-in advance.
+Nondeterministic programming is a novel approach to problems where a program
+must find a working solution out of many possible choices.  It greatly
+simplifies problems such as graph searching, or testing combinations of
+values, where there are many possible values to consider, often in some sort
+of hierarchical order, but the right combination is not known in advance.
 
 In such a situation, it can be useful to develop a program by pretending
 our programming language includes knowledge of the future -- and is thus
 able to _choose_ the right answer off the bat, and simply programming as
-if this is the case.
+if this were the case.
 
 A language with support for nondeterministic programming (such as Ruby
 with this gem) helps us keep up this pretense by saving the state of
@@ -66,7 +65,7 @@ _fails_, computation will be rewound to the previous choice point, and
 will continue with the next possible choice from there.
 
 Imagine, for instance, that we wish to test a combination lock with a
-three-number combination, with each number between 1 and 10, inclusive:
+three-number combination, with each number between 1 and 10, inclusive.
 Instead of writing code ourself to try every possible combination, we
 simply proceed as if each choice was the correct one, failing if the lock
 fails to open.  In short:
@@ -88,7 +87,7 @@ but we can program as if it has chosen the right one on the first try!
 To get started, include this gem using
 
     require 'rubygems'
-    require 'ambit
+    require 'ambit'
 
 This gem provides the Ambit module.  This module provides several methods
 which implement nondeterministic programming.
@@ -120,9 +119,12 @@ prints
 	2
 (and only "2")
 
-As an alternative, Ambit::assert can be used to fail if a condition holds;
-Ambit::assert will rewind to the previous invocation of Ambit::choose if
-and only if it's (single) argument is false:
+<em>This means that computation now proceeds as if that had been the value
+returned by Ambit::choose all along.</em>
+
+As an alternative, Ambit::assert can be used to fail unless a condition
+holds.  Ambit::assert will rewind to the previous invocation of
+Ambit::choose if and only if it's (single) argument is false:
 
     a = Ambit::choose([1, 2, 3])
     Ambit::assert a.even?
@@ -163,10 +165,10 @@ we have performed since the choice point we are rewinding to has had side
 effects (other than the choices made), those side effects will not
 themselves be rewound.  While some side effects (setting of variables) could
 theoretically be tracked and undone, this would require very careful
-semantics.  And other side effects could not be undone by any level of
-complexity added to our language -- if we have printed output to the user,
+semantics -- nd other side effects could not be undone by any level of
+complexity added to our language.  If we have printed output to the user,
 for instance, no amount of rewinding will make the user forget what he has
-seen -- while we simulate the ability to see the future and to change the
+seen; while we simulate the ability to see the future and to change the
 past, we can, in fact, do neither.
 
 This can sometimes cause confusion.  This code, for instance:
@@ -199,14 +201,14 @@ remains incremented even when we rewind computation).
 ==== More Than One Answer
 
 Often, more than one combination of choices is interesting to consider -- it
-may be useful, for instance, to see *all* combinations which do not fail,
+may be useful, for instance, to see _all_ combinations which do not fail,
 instead of only the first.
 
 Since Ambit::fail! will always rewind to the previous choice point, getting
 more possible combinations is as easy as calling Ambit::fail! in order to
-try the next combination, even though we have not, strictly, failed -- when
+try the next combination -- even though we have not, strictly, failed.  When
 no more successful combinations are available, this call to Ambit::fail!
-will instead raise an exception of type Ambit::ChoicesExhausted
+will instead raise an exception of type Ambit::ChoicesExhausted.
 
     begin
       a = Ambit::choose([1, 3, 5, 7, 9, 11, 13, 15])
@@ -242,7 +244,7 @@ computations, sometimes it is useful to abandon only one branch of a
 computation, while still keeping the ability to rewind to the choice which
 first took us down that branch.
 
-Suppose, for instance, that we are trying to guess a word with five letters:
+Suppose, for instance, that we are trying to guess a word with four letters:
 
     a = Ambit::choose('a'..'z')
     b = Ambit::choose('a'..'z')
@@ -286,7 +288,7 @@ the whole current branch of computation.
 ==== Private Generators
 
 In addition to using methods of the Ambit module directly, another option is
-to allocate a Ambit::Generator object explicitly.  All methods of the Ambit
+to allocate an Ambit::Generator object explicitly.  All methods of the Ambit
 module are also available as methods of Ambit::Generator (and in fact, the
 module allocates a default Generator object to handle all calls made at the
 module level).
@@ -310,7 +312,7 @@ unrelated set of nondeterministic computations.
 
 For historical reasons, Ambit::amb and Ambit::Generator#amb are provided as
 aliases for Ambit::choose and Ambit::Generator#choose.  Likewise, for
-historical reasons, calling Ambit::amb (and Ambit::Generator#amb) with
+historical reasons, calling Ambit::choose (and Ambit::Generator#choose) with
 no arguments is equivalent to calling Ambit::fail! (or
 Ambit::Generator#fail!).
 
@@ -318,7 +320,7 @@ For the same reason, Ambit::require and Ambit::Generator#require are
 provided as aliases for Ambit::assert and Ambit::Generator#assert.
 
 These aliases allow for a more direct translation of programs written with
-the *amb* operator discussed in *SICP* and elsewhere.
+the _amb_ operator discussed in _SICP_ and elsewhere.
 
 ==== Interaction with Threading
 
