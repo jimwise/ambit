@@ -105,7 +105,8 @@ calls Ambit::fail! if the enumerable is empty:
 
     a = Ambit::choose([1, 2, 3])
     puts a
-<em>prints "1"</em>
+prints
+    1
 
 If, later, Ambit::fail! is called, <em>computation is rewound until the
 point when Ambit::choose was last called</em>, and the next member of the
@@ -114,7 +115,9 @@ enumerable is returned <em>from the same call to Ambit::choose</em>:
     a = Ambit::choose([1, 2, 3])
     Ambit::fail! unless a.even?
     puts a
-<em>prints "2" (and only "2")</em>
+prints
+	2
+(and only "2")
 
 As an alternative, Ambit::assert can be used to fail if a condition holds
 -- Ambit::require will rewind to the previous invocation of Ambit::choose if
@@ -123,7 +126,9 @@ and only if it's (single) argument is false:
     a = Ambit::choose([1, 2, 3])
     Ambit::require a.even?
     puts a
-<em>prints "2" (and only "2")</em>
+prints
+    2
+(and only "2")
 
 Note that this call to Ambit::fail! (or Ambit::assert) can occur any amount
 of time later, and works <em>even if the function which called choose has
@@ -135,23 +140,63 @@ Ambit::fail! will rewind to the <em>most recent</em> call to Ambit::choose.
 If that set of choices has already returned every member of its enumerable,
 execution is instead rewound to the previous invocation of Ambit::choose,
 and execution continues with the next choice from that invocation's
-enumerable.
+enumerable:
+
+    a = Ambit::choose([1, 3, 5, 7, 9, 11, 13, 15])
+    b = Ambit::choose([0, 5, 10, 15])
+    Ambit::require a == b
+    puts a
+prints
+	5
+(and only "5")
 
 If all choices from all past calls to Ambit::choose have been exhausted (or
 if Ambit::fail! is called before any call to Ambit::choose), an exception of
 type Ambit::ChoicesExhausted is raised instead.
 
-==== More Than One Answer
-
-...
 
 ==== Side Effects
 
 ...
 
+==== More Than One Answer
+
+Often, more than one combination of choices is interesting to consider -- it
+may be useful, for instance, to see *all* combinations which do not fail,
+instead of only the first.
+
+Since Ambit::fail! will always rewind to the previous choice point, getting
+more possible combinations is as easy as calling Ambit::fail! in order to
+try the next combination, even though we have not, strictly, failed -- when
+no more successful combinations are available, this call to Ambit::fail!
+will instead raise an exception of type Ambit::ChoicesExhausted
+
+    begin
+      a = Ambit::choose([1, 3, 5, 7, 9, 11, 13, 15])
+      b = Ambit::choose([0, 5, 10, 15])
+      Ambit::require a == b
+      puts a
+      Ambit::fail!
+    rescue Ambit::ChoicesExhausted
+      puts "Done."
+    end
+prints
+    5
+    15
+    Done.
+
 ==== Marking and Cutting
 
 ...
+
+==== Cleaning up
+
+Ambit::clear! can be called at any time to eliminate all outstanding choices
+on the default Generator, ending nondeterminism (and allowing any
+outstanding alternate paths of execution to be garbage collected).  This is
+most useful when a given computation is finished, so that future invocations
+of Ambit::fail! will not restart the now-finished computation with another
+choice.
 
 ==== Private Generators
 
@@ -173,19 +218,9 @@ Generators is a good way to make code confusing, however, and should be
 avoided -- this capability is mainly provided to allow multi-threaded
 programs to safely use Ambit from more than one thread (see below).
 
-
-==== Cleaning up
-
-Ambit::clear! can be called at any time to eliminate all outstanding choices
-on the default Generator, ending nondeterminism (and allowing any
-outstanding alternate paths of execution to be garbage collected).  This is
-most useful when a given computation is finished, so that future invocations
-of Ambit::fail! will not restart the now-finished computation with another
-choice.
-
-Ambit::Generator#clear is provided for the same reason, but it is often
-clearer to use a new Ambit::Generator object for each unrelated set of
-nondeterministic computations.
+Ambit::Generator#clear! is provided for the same reason as Ambit::clear!,
+but it is often clearer to use a new Ambit::Generator object for each
+unrelated set of nondeterministic computations.
 
 ==== Compatibility
 
