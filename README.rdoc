@@ -1,0 +1,167 @@
+= nondeterminism
+
+Author::    Jim Wise  (mailto:jwise@draga.com)
+Copyright:: Copyright (c) 2011 Jim Wise
+License::   2-clause BSD-Style (see LICENSE.txt)
+URL:: https://github.com/jimwise/ruby/tree/master/nondeterminism
+
+== DESCRIPTION:
+
+This is an all-ruby implementation of choose/fail nondeterministic
+programming with branch cut, as described in Chapter 22 of Paul Graham's
+<em>On Lisp</em>[1], Chapter, or Section 4.3 of <em>SICP</em>[2].
+
+Due to Ruby containing a true call/cc, this is a much straighter port of
+Paul Graham's scheme version of this code than his Common Lisp or my C
+versions are.  :-)
+
+== REQUIREMENTS:
+
+<b>This code will not work in JRuby or MacRuby (no callcc).  It should work
+in Ruby 1.9 with minor changes (callcc has moved to the 'continuation'
+stdlib).</b>
+
+== INSTALL:
+
+To install: 
+
+  $ gem install nondeterminism
+
+(soon -- this is not uploaded yet!)
+
+== DEVELOPERS:
+
+After checking out the source, run:
+
+  $ rake newb
+
+This task will install any missing dependencies, run the tests/specs,
+and generate the RDoc.
+
+== SYNOPSIS
+
+=== What is Nondeterministic Programming?
+
+Nondeterministic programming is a novel approach to problems where a
+program must find a working solution out of many possible choices.  It
+greatly simplifies problems such graph searching, testing combinations of
+values, and so on, where there are many possible values to consider, often
+in some sort of hierarchical order, but the right combination is not known
+in advance.
+
+In such a situation, it can be useful to develop a program by pretending
+our programming language includes knowledge of the future -- and is thus
+able to _choose_ the right answer off the bat, and simply programming as
+if this is the case.
+
+A language with support for nondeterministic programming (such as Ruby
+with this gem) helps us keep up this pretense by saving the state of
+computation (with some limits) whenever we make an important choice.  If
+we later determine that we did _not_, in fact make the correct choice
+(lacking true language support for knowing the future), we can _fail_ the
+current computation, which <em>causes computation to rewind to the last
+choice made, and continue as if a different choice had been made</em>).
+
+When all possible choices have been tried, the next time computation
+_fails_, computation will be rewound to the previous choice point, and
+will continue with the next possible choice from there.
+
+Imagine, for instance, that we wish to test a combination lock with a
+three-number combination, with each number between 1 and 10, inclusive:
+Instead of writing code ourself to try every possible combination, we
+simply proceed as if each choice was the correct one, failing if the lock
+fails to open.  In short:
+
+   first = ND.choose(1..10)
+   second = ND.choose(1..10)
+   third = ND.choose(1..10)
+
+   ND.fail! unless open_lock(first, second, third)
+
+   # when we get here, lock is open!
+
+As our language does not actually implement knowledge of the future, this
+will still try as many combinations as are needed to find the right one --
+but we can program as if it has chosen the right one on the first try!
+
+=== How to Use This Gem
+
+To get started, include this gem using
+
+      require 'nondeterminism'
+
+This gem provides the NonDeterminism module.  For ease of use, ND is also
+provided as an alternate name for this module.  This module provides several
+methods which implement nondeterministic programming.
+
+Another option is to allocate a NonDeterminism::Generator object explicitly,
+instead of using the module-wide default.  This can be done with
+
+	nd = NonDeterminism::Generator::new
+
+each object allocated in this fashion has its own set of choices, and
+failing one will not directly affect others.  Nesting choices from different
+Generators is a good way to make code confusing, however, and should be
+avoided -- this capability is mainly provided to allow multi-threaded
+programs to safely use nondeterminism from more than one thread (see below).
+
+==== Choosing and Failing
+
+==== Marking and Cutting
+
+==== Interaction with Threading
+
+Given the strong modifications to flow of control which occur when a path of
+computation is _failed_, care must be taken when using nondeterministic
+programming in a multi-threaded program.  The two main ways to do this are:
+
+* perform all nondeterministic programming from a single thread of execution
+
+* give each thread which will be using nondeterministic programming its own NonDeterminism::Generator object.  This can be done easily using thread local variables:
+
+    def nd_begin
+      Thread.current[:ND] = Nondeterminism::Generator.new
+    end
+
+    def nd_choose choices
+      Thread.current[:ND].choose choices
+    end
+
+    def nd_fail! 
+      Thread.current[:ND].fail!
+    end
+
+=== References
+
+[1] Graham, Paul, <em>On Lisp</em>, Prentice Hall, 1993. Available online at http://www.paulgraham.com/onlisp.html
+
+[2] Abelson, Harold and Gerald Jay Sussman, <em>Structure and Interpretation of Computer Programs, 2nd Edition</em>, MIT Press, 1996.  Available online at http://mitpress.mit.edu/sicp/
+
+== LICENSE:
+
+(The BSD 2-clause License)
+
+ Copyright (c) 2011 Jim Wise
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS
+ BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.

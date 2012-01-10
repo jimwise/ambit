@@ -1,0 +1,10 @@
+.autotest
+.gitignore
+History.txt
+LICENSE.txt
+Manifest.txt
+README.rdoc
+README.txt
+Rakefile
+lib/nondeterminism.rb
+test/test_nondeterminism.rb

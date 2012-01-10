@@ -1,0 +1,12 @@
+# -*- ruby -*-
+
+require 'rubygems'
+require 'hoe'
+
+Hoe.plugin :rubyforge
+
+Hoe.spec 'nondeterminism' do
+  developer('Jim Wise', 'jwise@draga.com')
+end
+
+# vim: syntax=ruby
