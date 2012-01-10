@@ -154,9 +154,46 @@ If all choices from all past calls to Ambit::choose have been exhausted (or
 if Ambit::fail! is called before any call to Ambit::choose), an exception of
 type Ambit::ChoicesExhausted is raised instead.
 
-
 ==== Side Effects
 
+We've talked a lot above about "rewinding" computation to a previous choice
+point.  Not all computations can be rewound, however -- if the computation
+we have performed since the choice point we are rewinding to has had side
+effects (other than the choices made), those side effects will not
+themselves be rewound.  While some side effects (setting of variables) could
+theoretically be tracked and undone, this would require very careful
+semantics.  And other side effects could not be undone by any level of
+complexity added to our language -- if we have printed output to the user,
+for instance, no amount of rewinding will make the user forget what he has
+seen -- while we simulate the ability to see the future and to change the
+past, we can, in fact, do neither.
+
+This can sometimes cause confusion.  This code, for instance:
+
+    a = Ambit::choose([1, 2, 3])
+    puts a
+    Ambit::fail! unless a.even?
+
+prints
+
+    1
+    2
+
+instead of only "2" -- the printing has already been done by the time we
+call Ambit::fail!.
+
+Such side effects can also be useful, however.  This code:
+
+    i = 0;
+    first = Ambit.choose(1..10)
+    second = Ambit.choose(1..10)
+    third = Ambit.choose(1..10)
+    i += 1
+    Ambit.fail! unless open_lock(first, second, third)
+    puts i
+
+prints out the number of combinations which were tried in total (since +i+
+remains incremented even when we rewind computation).
 
 ==== More Than One Answer
 
@@ -183,6 +220,10 @@ prints
     5
     15
     Done.
+
+Note that this code, too depends on a side effect -- +a+ is output each time
+we get a match, even though we then call Ambit::fail! to rewind computation
+and try the next combination.
 
 ==== Cleaning up
 
