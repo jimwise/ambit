@@ -78,7 +78,7 @@ module Ambit
       @paths.unshift Proc.new {self.fail!}
     end
 
-    # Commit to all choices since the last #mark! operation.
+    # Commit to all choices since the last #mark operation.
     #
     # See "Marking and Cutting" in README for details
     def cut!
