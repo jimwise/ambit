@@ -64,6 +64,7 @@ module Ambit
       cc.call
     end
 
+    # Fail unless a condition holds.
     def assert cond
       fail! unless cond
     end
