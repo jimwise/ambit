@@ -1,9 +1,10 @@
 = ambit
 
+https://github.com/jimwise/ruby/tree/master/ambit
+
 Author::    Jim Wise  (mailto:jwise@draga.com)
 Copyright:: Copyright (c) 2011 Jim Wise
 License::   2-clause BSD-Style (see LICENSE.txt)
-Home::      https://github.com/jimwise/ruby/tree/master/ambit
 
 == DESCRIPTION:
 
