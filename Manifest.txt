@@ -5,7 +5,7 @@ Manifest.txt
 README.rdoc
 README.txt
 Rakefile
-lib/ambit.rb
-test/test_ambit.rb
 examples/example.rb
 examples/queens.rb
+lib/ambit.rb
+test/test_ambit.rb
