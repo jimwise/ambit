@@ -10,11 +10,14 @@ module Ambit
   VERSION = '0.9.0'
 
   # A ChoicesExhausted exception is raised if the outermost choose invocation of
-  # a Generator has run out of choices, indicating that no (more) solutions are possible
+  # a Generator has run out of choices, indicating that no (more) solutions are possible.
   class ChoicesExhausted < StandardError
   end
 
   class Generator
+    # Allocate a new private Generator.  Usually not needed -- use Ambit::choose et al, instead.
+    #
+    # See "Private Generators" in the README for details
     def initialize
       @paths = []
     end
@@ -22,7 +25,7 @@ module Ambit
     # Clear all outstanding choices registered with this generator.
     #
     # Returns the generator to the state it was in before all choices were
-    # made.  Does not affect control flow.
+    # made.  Does not rewind execution.
     def clear!
       @paths = []
     end
@@ -61,16 +64,22 @@ module Ambit
       cc.call
     end
 
-    def require cond
+    def assert cond
       fail! unless cond
     end
 
-    alias assert require
+    alias require assert
 
+    # Begin a mark/cut pair to commit to one branch of the current #choose operation.
+    #
+    # See "Marking and Cutting" in README for details
     def mark 
       @paths.unshift Proc.new {self.fail!}
     end
 
+    # Commit to all choices since the last #mark! operation.
+    #
+    # See "Marking and Cutting" in README for details
     def cut!
       return if @paths.empty?
       # rewind paths back to the last mark
@@ -80,12 +89,13 @@ module Ambit
     end
   end
 
+  # forward method invocations on this module to the default Generator.
   def Ambit::method_missing(sym, *args, &block) # :nodoc:
-    Ambit::Default_Generator.send(sym, *args, &block);
+    Ambit::Default_Generator.send(sym, *args, &block)
   end
 
   # The default generator used by Ambit.choose, Ambit.fail!, et al.
   # should not be used directly.
-  Default_Generator = Generator.new # :nodoc:
+  Default_Generator = Generator.new
 
 end
