@@ -120,11 +120,11 @@ prints
 (and only "2")
 
 As an alternative, Ambit::assert can be used to fail if a condition holds
--- Ambit::require will rewind to the previous invocation of Ambit::choose if
+-- Ambit::assert will rewind to the previous invocation of Ambit::choose if
 and only if it's (single) argument is false:
 
     a = Ambit::choose([1, 2, 3])
-    Ambit::require a.even?
+    Ambit::assert a.even?
     puts a
 prints
     2
@@ -144,7 +144,7 @@ enumerable:
 
     a = Ambit::choose([1, 3, 5, 7, 9, 11, 13, 15])
     b = Ambit::choose([0, 5, 10, 15])
-    Ambit::require a == b
+    Ambit::assert a == b
     puts a
 prints
 	5
@@ -157,7 +157,6 @@ type Ambit::ChoicesExhausted is raised instead.
 
 ==== Side Effects
 
-...
 
 ==== More Than One Answer
 
@@ -174,7 +173,7 @@ will instead raise an exception of type Ambit::ChoicesExhausted
     begin
       a = Ambit::choose([1, 3, 5, 7, 9, 11, 13, 15])
       b = Ambit::choose([0, 5, 10, 15])
-      Ambit::require a == b
+      Ambit::assert a == b
       puts a
       Ambit::fail!
     rescue Ambit::ChoicesExhausted
@@ -185,10 +184,6 @@ prints
     15
     Done.
 
-==== Marking and Cutting
-
-...
-
 ==== Cleaning up
 
 Ambit::clear! can be called at any time to eliminate all outstanding choices
@@ -197,6 +192,54 @@ outstanding alternate paths of execution to be garbage collected).  This is
 most useful when a given computation is finished, so that future invocations
 of Ambit::fail! will not restart the now-finished computation with another
 choice.
+
+==== Marking and Cutting
+
+While Ambit::clear! can be used to abandon an entire set of nondeterministic
+computations, sometimes it is useful to abandon only one branch of a
+computation, while still keeping the ability to rewind to the choice which
+first took us down that branch.
+
+Suppose, for instance, that we are trying to guess a word with five letters:
+
+    a = Ambit::choose('a'..'z')
+    b = Ambit::choose('a'..'z')
+    c = Ambit::choose('a'..'z')
+    d = Ambit::choose('a'..'z')
+    Ambit::assert good_word(a, b, c, d)
+    print a, b, c, d
+
+This works.  But what if we were able to determine, once all four letters
+were chosen, whether the first letter was correct?  How would we proceed?
+
+If we failed because the first letter was incorrect, we would continue trying
+every possible value for the second, third and fourth letters -- even though none of
+them could be correct.  We need a way to rewind to an earlier choice point.
+
+To work around this, Ambit provides a method, Ambit::cut! which "locks in" a
+set of past choices, preventing them from being revisited later:
+
+    a = Ambit::choose('a'..'z')
+    Ambit::mark
+    b = Ambit::choose('a'..'z')
+    c = Ambit::choose('a'..'z')
+    d = Ambit::choose('a'..'z')
+    if !good_first_letter(a, b, c, d)
+      Ambit::cut! 
+      Ambit::fail!
+    end   
+    Ambit::assert good_word(a, b, c, d)
+    print a, b, c, d
+
+When Ambit::cut! is called in the code above, all choices back to the
+<em>most recent</em> call of Ambit::mark are wiped out -- the next call to
+Ambit::fail! will rewind to the most recent Ambit::choose invocation
+<em>before</em> the most recent call to Ambit::mark.
+
+Ambit::cut! can also be used without Ambit::fail! to "commit" to all choices
+since the last call to Ambit::mark -- in this case, we are saying that we
+know these choices are good, so if we (later) fail, we want to rewind out of
+the whole current branch of computation.
 
 ==== Private Generators
 
