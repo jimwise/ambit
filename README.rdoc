@@ -1,6 +1,6 @@
 = ambit
 
-https://github.com/jimwise/ruby/tree/master/ambit
+https://github.com/jimwise/ambit
 
 Author::    Jim Wise  (mailto:jwise@draga.com)
 Copyright:: Copyright (c) 2011 Jim Wise
