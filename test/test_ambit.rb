@@ -39,5 +39,21 @@ class TestAmbit < Test::Unit::TestCase
       Ambit::fail!
     end
   end
+
+  def test_mark_cut
+    nd = Ambit::Generator.new
+    i = 0;
+    a = nd.choose(1..3)
+    nd.mark
+    b = nd.choose([1, 2, 3])
+    c = nd.choose([1, 2, 3])
+    i+=1
+    if b == 2 && c == 2
+      nd.cut!
+    end
+    nd.fail!
+  rescue Ambit::ChoicesExhausted
+    assert(i==15)
+  end
   
 end
