@@ -176,9 +176,7 @@ This can sometimes cause confusion.  This code, for instance:
     a = Ambit::choose([1, 2, 3])
     puts a
     Ambit::fail! unless a.even?
-
 prints
-
     1
     2
 
@@ -285,6 +283,23 @@ since the last call to Ambit::mark -- in this case, we are saying that we
 know these choices are good, so if we (later) fail, we want to rewind out of
 the whole current branch of computation.
 
+Finally, Ambit::unmark! can be used to remove the most recent mark (making
+the next Ambit::cut! operation cut back to an earlier mark (or commit to all
+choices if no other mark exists), and the Ambit::unmark_all! operation can
+be used to remove all current marks, making the next Ambit::cut! operation
+commit to all choices made so far.
+
+==== Watching Ambit work
+
+The methods Ambit::trace and Ambit::untrace can be used to enable debug
+tracing of Ambit operations.  Repeated calls to Ambit::trace increase the
+verbosity of trace output (though this has no effect in the current
+version), and a specific trace level (as an integer) may also be passed to
+Ambit::trace as an optional argument.
+
+Trace output is written to STDERR.  Trace output can be disabled by
+specifying a trace level of 0, or by calling Ambit::untrace.
+
 ==== Private Generators
 
 In addition to using methods of the Ambit module directly, another option is
@@ -307,6 +322,11 @@ programs to safely use Ambit from more than one thread (see below).
 Ambit::Generator#clear! is provided for the same reason as Ambit::clear!,
 but it is often clearer to use a new Ambit::Generator object for each
 unrelated set of nondeterministic computations.
+
+As with other module-level operations, Ambit::trace and Ambit::untrace do
+not turn on or off tracing for private generators -- the generator's own
+Ambit::Generator#trace and Ambit::Generator#untrace must be used to enable
+tracing of a private generator's operation.
 
 ==== Compatibility
 

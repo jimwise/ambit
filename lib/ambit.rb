@@ -7,7 +7,7 @@
 
 module Ambit
 
-  VERSION = '0.9.1'
+  VERSION = '0.10'
 
   # A ChoicesExhausted exception is raised if the outermost choose invocation of
   # a Generator has run out of choices, indicating that no (more) solutions are possible.
@@ -20,6 +20,24 @@ module Ambit
     # See "Private Generators" in the README for details
     def initialize
       @paths = []
+      @trace = 0
+    end
+
+    # Turn on tracing (to standard error) of Ambit operations
+    #
+    # The optional level argument sets the verbosity -- if not passed, each
+    # call to this method increases verbosity
+    def trace lvl=false
+      if lvl
+        @trace = lvl
+      else 
+        @trace = @trace + 1
+      end
+    end
+
+    # Turn off tracing (to standard error) of Ambit operations
+    def untrace
+      @trace = 0
     end
 
     # Clear all outstanding choices registered with this generator.
@@ -46,7 +64,9 @@ module Ambit
       ch = choices.clone          # clone it in case it's modified by the caller
       ch.each do |choice|
         callcc do |cc|
+          STDERR.print "choosing from " + choices.inspect + ": " if @trace > 0
           @paths.unshift cc
+          STDERR.puts choice.inspect if @trace > 0
           return choice
         end
       end
@@ -60,7 +80,8 @@ module Ambit
     def fail!
       raise ChoicesExhausted.new if @paths.empty?
       cc = @paths.shift
-      # if it quacks (or can be called) like a duck, call it -- it's either a Proc from #mark or a Continuation from #choose
+      # if it quacks (or can be called) like a duck, call it -- it's either a Proc
+      # from #mark or a Continuation from #choose
       cc.call
     end
 
@@ -78,10 +99,30 @@ module Ambit
       @paths.unshift Proc.new {self.fail!}
     end
 
+    # Remove the most recent mark
+    #
+    # See "Marking and Cutting" in README for details
+    def unmark!
+      STDERR.puts "unmark!" if @trace > 0
+      return if @paths.empty?
+      n = @paths.rindex {|x| x.instance_of? Proc}
+      n and @paths.delete_at(n)
+    end
+
+    # Remove all marks
+    #
+    # See "Marking and Cutting" in README for details
+    def unmark_all!
+      STDERR.puts "unmark_all!" if @trace > 0
+      return if @paths.empty?
+      @paths = @paths.reject {|x| x.instance_of? Proc}
+    end
+
     # Commit to all choices since the last #mark operation.
     #
     # See "Marking and Cutting" in README for details
     def cut!
+      STDERR.puts "cut!" if @trace > 0
       return if @paths.empty?
       # rewind paths back to the last mark
       @paths = @paths.drop_while {|x| x.instance_of? Continuation}

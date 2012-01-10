@@ -1,6 +1,9 @@
 require "test/unit"
 require "ambit"
 
+Ambit::trace if ENV['AMBIT_TRACE']
+
+
 class TestAmbit < Test::Unit::TestCase
 
   def test_simple_default
@@ -64,5 +67,28 @@ class TestAmbit < Test::Unit::TestCase
   rescue Ambit::ChoicesExhausted
     assert(i==15)
   end
-  
+
+  def test_unmark_all
+    a = Ambit::choose(1..3)
+    Ambit::mark
+    b = Ambit::choose(1..3)
+    Ambit::unmark_all!
+    # if we hadn't unmarked here, a cut would leave us choices
+    Ambit::cut!
+    assert_raise Ambit::ChoicesExhausted do
+      Ambit::fail!
+    end
+  end
+
+  def test_unmark
+    a = Ambit::choose(1..3)
+    Ambit::mark
+    Ambit::unmark!
+    # if we hadn't unmarked here, a cut would leave us choices
+    Ambit::cut!
+    assert_raise Ambit::ChoicesExhausted do
+      Ambit::fail!
+    end
+  end
+
 end

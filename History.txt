@@ -1,3 +1,14 @@
+=== 0.10 / 2011-04-26
+
+* Add Ambit::unmark! and Ambit::unmark_all!, which can be used to undo the
+  effects of the Ambit::mark operation -- see "Marking and Cutting" in
+  README for details.
+
+* Add Ambit::trace and Ambit::untrace to turn on or off tracing of Ambit
+  operations to STDERR.  In Ambit test cases, check for the environment
+  variable AMBIT_TRACE, and turn on tracing during execution of tests if it
+  is set.
+
 === 0.9.1 / 2011-04-26
 
 * Minor documentation improvements
