@@ -119,8 +119,8 @@ prints
 	2
 (and only "2")
 
-As an alternative, Ambit::assert can be used to fail if a condition holds
--- Ambit::assert will rewind to the previous invocation of Ambit::choose if
+As an alternative, Ambit::assert can be used to fail if a condition holds;
+Ambit::assert will rewind to the previous invocation of Ambit::choose if
 and only if it's (single) argument is false:
 
     a = Ambit::choose([1, 2, 3])
@@ -184,7 +184,7 @@ call Ambit::fail!.
 
 Such side effects can also be useful, however.  This code:
 
-    i = 0;
+    i = 0
     first = Ambit.choose(1..10)
     second = Ambit.choose(1..10)
     third = Ambit.choose(1..10)
@@ -377,7 +377,7 @@ elegant, as this is not prolog (and I am not Sterling or Shapiro).
       board.each_with_index do |c, r|
         return false if c == piece  # same column
         # they're on the same diagonal if the distance in columns == the distance in rows
-        rdist = board.size - r;
+        rdist = board.size - r
         cdist = (piece - c).abs
         return false if rdist == cdist
       end
