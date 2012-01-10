@@ -260,8 +260,8 @@ If we failed because the first letter was incorrect, we would continue trying
 every possible value for the second, third and fourth letters -- even though none of
 them could be correct.  We need a way to rewind to an earlier choice point.
 
-To work around this, Ambit provides a method, Ambit::cut! which "locks in" a
-set of past choices, preventing them from being revisited later:
+To allow this, Ambit provides a method, Ambit::cut! which "locks in" a set
+of past choices, preventing them from being revisited later:
 
     a = Ambit::choose('a'..'z')
     Ambit::mark
