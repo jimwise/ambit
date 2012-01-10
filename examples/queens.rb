@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 
+require 'rubygems'
 require 'ambit'
 
 # This solution to the N queens problem is inspired by that given

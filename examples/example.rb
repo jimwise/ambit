@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
+require 'rubygems'
 require 'ambit'
-
 
 # Choose 2 example  (see _On Lisp_, sec, 22.1 (pp. 286-289)
 def choose2
