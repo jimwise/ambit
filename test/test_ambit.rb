@@ -17,12 +17,21 @@ class TestAmbit < Test::Unit::TestCase
     assert(x == 2)
   end
 
-  def test_nested
+  def test_nested_default
     a = Ambit::choose(0..5)
     b = Ambit::choose(0..5)
     Ambit::fail! unless a + b == 7
     assert(a+b == 7)
     Ambit::clear!
+  end
+
+  def test_nested_private
+    nd = Ambit::Generator.new
+    a = nd.choose(0..5)
+    b = nd.choose(0..5)
+    nd.fail! unless a + b == 7
+    assert(a+b == 7)
+    nd.clear!
   end
 
   def test_toplevel_fail
