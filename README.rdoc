@@ -206,8 +206,7 @@ module are also available as methods of Ambit::Generator (and in fact, the
 module allocates a default Generator object to handle all calls made at the
 module level).
 
-Ambit::Generator::new can be used to allocate 
-
+Ambit::Generator::new can be used to allocate a new Generator:
 
     nd = Ambit::Generator::new
     nd.choose('a' .. 'e')
