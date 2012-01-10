@@ -5,7 +5,7 @@ require 'hoe'
 
 Hoe.plugin :rubyforge
 
-Hoe.spec 'nondeterminism' do
+Hoe.spec 'ambit' do
   developer('Jim Wise', 'jwise@draga.com')
 end
 
