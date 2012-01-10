@@ -6,5 +6,5 @@ Manifest.txt
 README.rdoc
 README.txt
 Rakefile
-lib/nondeterminism.rb
-test/test_nondeterminism.rb
+lib/ambit.rb
+test/test_ambit.rb
