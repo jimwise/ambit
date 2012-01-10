@@ -61,19 +61,39 @@ BackTrack = {
 }
 Colors = [:red, :yellow, :blue, :green]
 
-def colorize map
+# when called as colorize2(map), we start from the beginning colorizing that
+# map.  when recursively called as colorize2(map, countries, colorized),
+# countries are the countries left to colorize, and colorized are the
+# assignments made so far.
+
+def colorize map, countries=map.keys, colorized={}
+  country=countries.first
+  return colorized if country.nil?
+
+  color = Ambit.choose Colors
+  #puts "considering #{color} for #{country}"
+  map[country].each {|n| Ambit.assert colorized[n] != color}
+
+  colorized_new = colorized.clone # fake a functional view of hash
+  colorized_new[country] = color
+  colorize map, countries.drop(1), colorized_new
+end
+
+# an alternative version, using iteration instead of recursion
+def colorize_iterating  map
   # map from country to its color
   colorized = {}
   map.each do |country, neighbors|
     local_colorized = colorized.clone # fake a functional view of colorized
     color = Ambit.choose Colors
-    puts "considering #{color} for #{country}"
+    #puts "considering #{color} for #{country}"
     neighbors.each {|n| Ambit.assert colorized[n] != color}
     local_colorized[country] = color
     colorized = local_colorized
   end
   colorized
 end
+
 
 # a deterministic check, for comparison purposes
 def check map, colorized
@@ -87,7 +107,7 @@ def check map, colorized
   end
 end
 
-def colorize_map map
+def test_map map
   colorized = colorize map
   check map, colorized
 
@@ -96,7 +116,14 @@ def colorize_map map
   end
 end
 
-# colorize_map Example
-colorize_map BackTrack
-# colorize_map ThreeByThree
-# colorize_map WesternEurope
+puts "Simple example:"
+test_map Example
+puts ""
+puts "Complex example:"
+test_map BackTrack
+puts ""
+puts "Three-by-three grid:"
+test_map ThreeByThree
+puts ""
+puts "Western Europe:"
+test_map WesternEurope
