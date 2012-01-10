@@ -165,7 +165,7 @@ we have performed since the choice point we are rewinding to has had side
 effects (other than the choices made), those side effects will not
 themselves be rewound.  While some side effects (setting of variables) could
 theoretically be tracked and undone, this would require very careful
-semantics -- nd other side effects could not be undone by any level of
+semantics -- and other side effects could not be undone by any level of
 complexity added to our language.  If we have printed output to the user,
 for instance, no amount of rewinding will make the user forget what he has
 seen; while we simulate the ability to see the future and to change the
