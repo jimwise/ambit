@@ -1,9 +1,9 @@
-= nondeterminism
+= ambit
 
 Author::    Jim Wise  (mailto:jwise@draga.com)
 Copyright:: Copyright (c) 2011 Jim Wise
 License::   2-clause BSD-Style (see LICENSE.txt)
-URL:: https://github.com/jimwise/ruby/tree/master/nondeterminism
+URL:: https://github.com/jimwise/ruby/tree/master/ambit
 
 == DESCRIPTION:
 
@@ -25,7 +25,7 @@ stdlib).</b>
 
 To install: 
 
-  $ gem install nondeterminism
+  $ gem install ambit
 
 (soon -- this is not uploaded yet!)
 
@@ -72,11 +72,11 @@ Instead of writing code ourself to try every possible combination, we
 simply proceed as if each choice was the correct one, failing if the lock
 fails to open.  In short:
 
-   first = ND.choose(1..10)
-   second = ND.choose(1..10)
-   third = ND.choose(1..10)
+   first = Ambit.choose(1..10)
+   second = Ambit.choose(1..10)
+   third = Ambit.choose(1..10)
 
-   ND.fail! unless open_lock(first, second, third)
+   Ambit.fail! unless open_lock(first, second, third)
 
    # when we get here, lock is open!
 
@@ -89,22 +89,21 @@ but we can program as if it has chosen the right one on the first try!
 To get started, include this gem using
 
       require 'rubygems'
-      require 'nondeterminism'
+      require 'ambit
 
-This gem provides the NonDeterminism module.  For ease of use, ND is also
-provided as an alternate name for this module.  This module provides several
-methods which implement nondeterministic programming.
+This gem provides the Ambit module.  This module provides several methods
+which implement nondeterministic programming.
 
-Another option is to allocate a NonDeterminism::Generator object explicitly,
-instead of using the module-wide default.  This can be done with
+Another option is to allocate a Ambit::Generator object explicitly, instead
+of using the module-wide default.  This can be done with
 
-	nd = NonDeterminism::Generator::new
+	nd = Ambit::Generator::new
 
 each object allocated in this fashion has its own set of choices, and
 failing one will not directly affect others.  Nesting choices from different
 Generators is a good way to make code confusing, however, and should be
 avoided -- this capability is mainly provided to allow multi-threaded
-programs to safely use nondeterminism from more than one thread (see below).
+programs to safely use Ambit from more than one thread (see below).
 
 ==== Choosing and Failing
 
@@ -118,18 +117,18 @@ programming in a multi-threaded program.  The two main ways to do this are:
 
 * perform all nondeterministic programming from a single thread of execution
 
-* give each thread which will be using nondeterministic programming its own NonDeterminism::Generator object.  This can be done easily using thread local variables:
+* give each thread which will be using nondeterministic programming its own Ambit::Generator object.  This can be done easily using thread local variables:
 
     def nd_begin
-      Thread.current[:ND] = Nondeterminism::Generator.new
+      Thread.current[:AMB] = Ambit::Generator.new
     end
 
     def nd_choose choices
-      Thread.current[:ND].choose choices
+      Thread.current[:AMB].choose choices
     end
 
     def nd_fail! 
-      Thread.current[:ND].fail!
+      Thread.current[:AMB].fail!
     end
 
 === Longer example
@@ -150,8 +149,8 @@ elegant, as this is not prolog (and I am not Sterling or Shapiro).
      if board.size == n
        board
      else
-       c = ND.choose(1..n)
-       ND.fail! unless safe board, c
+       c = Ambit.choose(1..n)
+       Ambit.fail! unless safe board, c
        queens n, board + [c]
      end
    end

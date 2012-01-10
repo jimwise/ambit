@@ -1,6 +1,6 @@
 #!/usr/bin/ruby
 
-require 'nondeterminism'
+require 'ambit'
 
 # This solution to the N queens problem is inspired by that given
 #
@@ -17,7 +17,7 @@ require 'nondeterminism'
 
 # Here is the actual board generator.  Next is the test if a position is safe.  All else
 # in this file is for display or testing.
-$nd = Nondeterminism::Generator.new
+$nd = Ambit::Generator.new
 def queens n, board = []
   if board.size == n
     board
@@ -118,7 +118,7 @@ args.each do |a|
     # force next solution; will throw ChoicesExhausted if none found
     $nd.fail!
 
-  rescue Nondeterminism::ChoicesExhausted
+  rescue Ambit::ChoicesExhausted
     # thrown when we finally run out of possible boards, whether we found any valid
     # boards or not (since we unconditionally fail! above)
     puts "#{count} #{n}x#{n} boards found, not accounting for symmetry"

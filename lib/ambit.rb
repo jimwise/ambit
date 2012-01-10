@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2011 Jim Wise
 # License::   2-clause BSD-Style (see LICENSE[link:files/LICENSE.html])
 
-module Nondeterminism
+module Ambit
 
   VERSION = '0.9.0'
 
@@ -80,15 +80,12 @@ module Nondeterminism
     end
   end
 
-  def Nondeterminism::method_missing(sym, *args, &block) # :nodoc:
-    Nondeterminism::Default_Generator.send(sym, *args, &block);
+  def Ambit::method_missing(sym, *args, &block) # :nodoc:
+    Ambit::Default_Generator.send(sym, *args, &block);
   end
 
-  # The default generator used by ND.choose, ND.fail!, et al.
+  # The default generator used by Ambit.choose, Ambit.fail!, et al.
   # should not be used directly.
   Default_Generator = Generator.new # :nodoc:
 
 end
-
-# For convenience, ND is an alias for the NonDeterminism module
-ND = Nondeterminism # :nodoc:
