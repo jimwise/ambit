@@ -57,10 +57,10 @@ if this is the case.
 A language with support for nondeterministic programming (such as Ruby
 with this gem) helps us keep up this pretense by saving the state of
 computation (with some limits) whenever we make an important choice.  If
-we later determine that we did _not_, in fact make the correct choice
+we later determine that we did _not_, in fact, make the correct choice
 (lacking true language support for knowing the future), we can _fail_ the
 current computation, which <em>causes computation to rewind to the last
-choice made, and continue as if a different choice had been made</em>).
+choice made, and continue as if a different choice had been made</em>.
 
 When all possible choices have been tried, the next time computation
 _fails_, computation will be rewound to the previous choice point, and
@@ -88,6 +88,7 @@ but we can program as if it has chosen the right one on the first try!
 
 To get started, include this gem using
 
+      require 'rubygems'
       require 'nondeterminism'
 
 This gem provides the NonDeterminism module.  For ease of use, ND is also
@@ -131,11 +132,56 @@ programming in a multi-threaded program.  The two main ways to do this are:
       Thread.current[:ND].fail!
     end
 
+=== Longer example
+
+This solution to the N queens problem is inspired by the prolog version in
+<em>The Art of Prolog</em> by Leon Sterling and Ehud Shapiro[3], but is less
+elegant, as this is not prolog (and I am not Sterling or Shapiro).
+
+   # we want to place N queens on an NxN chess board.  Since we know no two queens
+   # can be in the same row, an array of N integers between 0 and N-1 will do to
+   # represent the placement.  Since we know no two queens can be in the same column,
+   # each number from 1 .. N will appear once in this array;  this means the solution
+   # is a permutation of 1 .. N
+
+   # Here is the complete board generator.  Next is the test if a position is safe.
+
+   def queens n, board = []
+     if board.size == n
+       board
+     else
+       c = ND.choose(1..n)
+       ND.fail! unless safe board, c
+       queens n, board + [c]
+     end
+   end
+
+  # board is the first M columns of an NxN board, and is valid so far.
+  # piece is a proposed piece for the M+1th row of the board.
+  # returns true if piece is a valid placement, false otherwise
+
+  def safe board, piece
+    board.each_with_index do |c, r|
+      return false if c == piece  # same column
+      # they're on the same diagonal if the distance in columns == the distance in rows
+      rdist = board.size - r;
+      cdist = (piece - c).abs
+      return false if rdist == cdist
+    end
+    true
+  end
+
+The file examples/queens.rb, installed with this gem, contains a version of
+this with display code, and a command-line driver to print all solutions for
+a given N.
+
 === References
 
 [1] Graham, Paul, <em>On Lisp</em>, Prentice Hall, 1993. Available online at http://www.paulgraham.com/onlisp.html
 
 [2] Abelson, Harold and Gerald Jay Sussman, <em>Structure and Interpretation of Computer Programs, 2nd Edition</em>, MIT Press, 1996.  Available online at http://mitpress.mit.edu/sicp/
+
+[3] Sterling, Leon and Ehud Shapiro, <em>The Art of Prolog</em>, MIT Press, 1994
 
 == LICENSE:
 

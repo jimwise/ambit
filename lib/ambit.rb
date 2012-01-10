@@ -19,16 +19,26 @@ module Nondeterminism
       @paths = []
     end
 
+    # Clear all outstanding choices registered with this generator.
+    #
+    # Returns the generator to the state it was in before all choices were
+    # made.  Does not affect control flow.
     def clear!
       @paths = []
     end
 
-    # choose -- given an enumerator, begin a generate-and-test process.
-    #   this method returns with the first member of the enumerator
-    #   a later call to fail! on the same generator will backtrack and
-    #   try the next value in the enumerator.
-    #   Multiple calls to choose will nest, so that backtracking forms
-    #   a tree-like execution path
+    # Given an enumerator, begin a generate-and-test process.
+    #
+    # Returns with the first member of the enumerator.  A later call to #fail!
+    # on the same generator will backtrack and try the next value in the
+    # enumerator, continuing from the point of this #choose as if that value
+    # had been chosen originally.
+    #
+    # Multiple calls to #choose will nest, so that backtracking forms
+    # a tree-like execution path
+    #
+    # calling #choose with no argument or an empty iterator 
+    # is equivalent to calling #fail!
     def choose choices = []
       ch = choices.clone          # clone it in case it's modified by the caller
       ch.each do |choice|
@@ -42,6 +52,8 @@ module Nondeterminism
 
     alias amb choose
 
+    # Indicate that the current combination of choices has failed, and roll execution back
+    # to the last #choose, continuing with the next choice.
     def fail!
       raise ChoicesExhausted.new if @paths.empty?
       cc = @paths.shift
@@ -68,11 +80,13 @@ module Nondeterminism
     end
   end
 
-  Default_Generator = Generator.new # :nodoc:
-
   def Nondeterminism::method_missing(sym, *args, &block) # :nodoc:
     Nondeterminism::Default_Generator.send(sym, *args, &block);
   end
+
+  # The default generator used by ND.choose, ND.fail!, et al.
+  # should not be used directly.
+  Default_Generator = Generator.new # :nodoc:
 
 end
 

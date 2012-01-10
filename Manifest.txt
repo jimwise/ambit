@@ -1,5 +1,4 @@
 .autotest
-.gitignore
 History.txt
 LICENSE.txt
 Manifest.txt
@@ -8,3 +7,5 @@ README.txt
 Rakefile
 lib/ambit.rb
 test/test_ambit.rb
+examples/example.rb
+examples/queens.rb
