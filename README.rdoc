@@ -268,7 +268,7 @@ of past choices, preventing them from being revisited later:
     b = Ambit::choose('a'..'z')
     c = Ambit::choose('a'..'z')
     d = Ambit::choose('a'..'z')
-    if !good_first_letter(a, b, c, d)
+    unless good_first_letter(a, b, c, d)
       Ambit::cut! 
       Ambit::fail!
     end   
