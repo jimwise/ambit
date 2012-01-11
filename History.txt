@@ -1,6 +1,9 @@
 * Additional documentation on side effects and rewinding.
 
-* Fixed an error in documentation for Generator#trace and Generator#untrace.
+* Fixed Ambit::trace and Ambit::untrace to work as described in the docs.
+  This breaks the (undocumented) ability to turn on tracing
+  generator-by-generator, but buys the ability to trace operation of the
+  anonymous generator used by Ambit::choose.
 
 === 0.10.1 / 2011-04-26
 
