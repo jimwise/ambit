@@ -338,14 +338,16 @@ commit to all choices made so far.
 
 ==== Watching Ambit work
 
-The methods Ambit::trace and Ambit::untrace can be used to enable debug
-tracing of Ambit operations.  Repeated calls to Ambit::trace increase the
-verbosity of trace output (though this has no effect in the current
-version), and a specific trace level (as an integer) may also be passed to
-Ambit::trace as an optional argument.
+The methods Generator#trace and Generator#untrace can be used to enable
+debug tracing of Ambit operations.  Repeated calls to Generator#trace
+increase the verbosity of trace output (though this has no effect in the
+current version), and a specific trace level (as an integer) may also be
+passed to Generator#trace as an optional argument.
 
 Trace output is written to STDERR.  Trace output can be disabled by
-specifying a trace level of 0, or by calling Ambit::untrace.
+specifying a trace level of 0, or by calling Generator#untrace.  There is
+currently no way to trace operations of the default anonymous generator used
+by Ambit::choose.
 
 ==== Private Generators
 

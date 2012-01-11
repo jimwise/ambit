@@ -1,4 +1,6 @@
-* Additional documentation on side effects and rewinding
+* Additional documentation on side effects and rewinding.
+
+* Fixed an error in documentation for Generator#trace and Generator#untrace.
 
 === 0.10.1 / 2011-04-26
 
