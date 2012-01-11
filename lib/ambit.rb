@@ -15,6 +15,7 @@ module Ambit
   end
 
   class Generator
+    @@trace = 0
     # Allocate a new private Generator.  Usually not needed -- use Ambit::choose et al, instead.
     #
     # See "Private Generators" in the README for details
@@ -25,19 +26,23 @@ module Ambit
 
     # Turn on tracing (to standard error) of Ambit operations
     #
+    # intended for use by Ambit::trace
+    #
     # The optional level argument sets the verbosity -- if not passed, each
     # call to this method increases verbosity
-    def trace lvl=false
+    def self.trace lvl=false
       if lvl
-        @trace = lvl
+        @@trace = lvl
       else 
-        @trace = @trace + 1
+        @@trace = @trace + 1
       end
     end
 
     # Turn off tracing (to standard error) of Ambit operations
-    def untrace
-      @trace = 0
+    #
+    # intended for use by Ambit::untrace
+    def self.untrace
+      @@trace = 0
     end
 
     # Clear all outstanding choices registered with this generator.
@@ -131,8 +136,26 @@ module Ambit
     end
   end
 
+  # Turn on tracing (to standard error) of Ambit operations
+  #
+  # See ``Watching Ambit Work'' in README.rdoc
+  #
+  # The optional level argument sets the verbosity -- if not passed, each
+  # call to this method increases verbosity
+  def self.trace lvl = false
+    Generator::trace lvl
+  end
+
+  # Turn off tracing (to standard error) of Ambit operations
+  #
+  # See ``Watching Ambit Work'' in README.rdoc
+  #
+  def self.untrace
+    Generator::untrace
+  end
+
   # forward method invocations on this module to the default Generator.
-  def Ambit::method_missing(sym, *args, &block) # :nodoc:
+  def self.method_missing(sym, *args, &block) # :nodoc:
     Ambit::Default_Generator.send(sym, *args, &block)
   end
 
