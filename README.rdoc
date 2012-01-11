@@ -116,7 +116,7 @@ enumerable is returned <em>from the same call to Ambit::choose</em>:
     Ambit::fail! unless a.even?
     puts a
 prints
-	2
+    2
 (and only "2")
 
 <em>This means that computation now proceeds as if that had been the value
@@ -181,20 +181,67 @@ prints
     2
 
 instead of only "2" -- the printing has already been done by the time we
-call Ambit::fail!.
+call Ambit::fail!.  
+
+Likewise, this code:
+
+    x = 1
+    y = Ambit::choose([1, 2, 3])
+    if y == 2
+      puts x
+    else
+      x = 42
+    end
+    Ambit::fail! unless a.even?
+
+prints
+    42
+
+, not +1+, as Ambit does not rewind the setting of 'x' after the first
+return from Ambit::choose.
 
 Such side effects can also be useful, however.  This code:
 
     i = 0
     first = Ambit.choose(1..10)
+    i += 1
     second = Ambit.choose(1..10)
+    i += 1
     third = Ambit.choose(1..10)
     i += 1
     Ambit.fail! unless open_lock(first, second, third)
     puts i
 
-prints out the number of combinations which were tried in total (since +i+
+prints out the number of values which were chosen in total (since +i+
 remains incremented even when we rewind computation).
+
+If we wanted to avoid this type of side effect, one option would be to use a
+function argument to capture this setting, as function calls (and thus the
+value of their arguments and local variables) are rewindable.  This version,
+for instance:
+
+   def try_first
+     i = 0
+     first = Ambit::choose(1..10)
+     try_second(i + 1, first)
+   end
+
+   def try_second i, first
+     second = Ambit::choose(1..10)
+     try_third(i + 1, first, second)
+   end
+
+   def try_third i, first, second
+     third = Ambit::choose(1..10)
+     Ambit.fail! unless open_lock(first, second, third)
+     puts i+1
+   end
+
+   try_first
+
+will always print +3+ -- the number of values tried in the ultimately
+successful series of choices, rather than the number of combinations tried
+over all.
 
 ==== More Than One Answer
 

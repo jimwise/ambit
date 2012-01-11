@@ -59,3 +59,46 @@ rescue Ambit::ChoicesExhausted
 end
 
 find_boxes
+
+Ambit::clear!
+
+# Simple combination lock example, used in README
+
+# test if we have the right combination
+def open_lock x, y, z
+  [x, y, z] == [3, 7, 2]
+end
+
+# version with global variable -- counts calls to #choose
+def try_combinations
+  i = 0
+  first = Ambit.choose(1..10)
+  i += 1
+  second = Ambit.choose(1..10)
+  i += 1
+  third = Ambit.choose(1..10)
+  i += 1
+  Ambit.fail! unless open_lock(first, second, third)
+  i
+end
+
+puts try_combinations
+
+def try_first
+  i = 0
+  first = Ambit::choose(1..10)
+  try_second(i + 1, first)
+end
+
+def try_second i, first
+  second = Ambit::choose(1..10)  
+  try_third(i + 1, first, second)
+end
+
+def try_third i, first, second
+  third = Ambit::choose(1..10)
+  Ambit.fail! unless open_lock(first, second, third)
+  i+1
+end
+
+puts try_first

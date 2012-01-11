@@ -1,3 +1,5 @@
+* Additional documentation on side effects and rewinding
+
 === 0.10.1 / 2011-04-26
 
 * Updated repo path -- no functional change.
