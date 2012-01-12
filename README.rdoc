@@ -12,10 +12,6 @@ This is an all-ruby implementation of choose/fail nondeterministic
 programming with branch cut, as described in Chapter 22 of Paul Graham's
 <em>On Lisp</em>[1], or Section 4.3 of <em>SICP</em>[2].
 
-Due to Ruby containing a true call/cc, this is a much straighter port of
-Paul Graham's scheme version of this code than his Common Lisp or my C
-versions are.  :-)
-
 == REQUIREMENTS:
 
 <b>This code will not work in JRuby or MacRuby (no callcc).  It should work
