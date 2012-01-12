@@ -8,9 +8,8 @@ License::   2-clause BSD-Style (see LICENSE.txt)
 
 == DESCRIPTION:
 
-This is an all-ruby implementation of choose/fail nondeterministic
-programming with branch cut, as described in Chapter 22 of Paul Graham's
-<em>On Lisp</em>[1], or Section 4.3 of <em>SICP</em>[2].
+Ambit is a ruby non-deterministic programming system with backtracking and
+branch cut.
 
 == REQUIREMENTS:
 
@@ -456,11 +455,16 @@ a given N.
 
 === References
 
-[1] Graham, Paul, <em>On Lisp</em>, Prentice Hall, 1993. Available online at http://www.paulgraham.com/onlisp.html
+For more information on nondeterministic programming, see
 
-[2] Abelson, Harold and Gerald Jay Sussman, <em>Structure and Interpretation of Computer Programs, 2nd Edition</em>, MIT Press, 1996.  Available online at http://mitpress.mit.edu/sicp/
+* Abelson, Harold and Gerald Jay Sussman, <em>Structure and Interpretation
+of Computer Programs, 2nd Edition</em>, Section 4.3, MIT Press, 1996.
+Available online at http://mitpress.mit.edu/sicp/
 
-[3] Sterling, Leon and Ehud Shapiro, <em>The Art of Prolog</em>, MIT Press, 1994
+* Graham, Paul, <em>On Lisp</em>, Chapter 22, Prentice Hall, 1993. Available
+online at http://www.paulgraham.com/onlisp.html
+
+* Sterling, Leon and Ehud Shapiro, <em>The Art of Prolog</em>, MIT Press, 1994
 
 == LICENSE:
 

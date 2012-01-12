@@ -1,3 +1,5 @@
+=== 0.11 / 2012-10-12
+
 * Additional documentation on side effects and rewinding.
 
 * Fixed Ambit::trace and Ambit::untrace to work as described in the docs.
@@ -5,7 +7,7 @@
   generator-by-generator, but buys the ability to trace operation of the
   anonymous generator used by Ambit::choose.
 
-=== 0.10.1 / 2011-04-26
+=== 0.10.1 / 2012-10-10
 
 * Updated repo path -- no functional change.
 
