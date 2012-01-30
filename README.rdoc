@@ -13,9 +13,8 @@ branch cut.
 
 == REQUIREMENTS:
 
-<b>This code will not work in JRuby or MacRuby (no callcc).  It should work
-in Ruby 1.9 with minor changes (callcc has moved to the 'continuation'
-stdlib).</b>
+<b>This code will not work in JRuby or MacRuby (no callcc).  It is tested
+(and should work fine) in Ruby 1.8.7 and 1.9.3.</b>
 
 == INSTALL:
 
