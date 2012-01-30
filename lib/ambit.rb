@@ -5,9 +5,11 @@
 # Copyright:: Copyright (c) 2011 Jim Wise
 # License::   2-clause BSD-Style (see LICENSE[link:files/LICENSE.html])
 
+require 'continuation' if  RUBY_VERSION !~ /^1.8/ 
+
 module Ambit
 
-  VERSION = '0.11'
+  VERSION = '0.12'
 
   # A ChoicesExhausted exception is raised if the outermost choose invocation of
   # a Generator has run out of choices, indicating that no (more) solutions are possible.

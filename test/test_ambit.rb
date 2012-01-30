@@ -55,7 +55,7 @@ class TestAmbit < Test::Unit::TestCase
   def test_mark_cut
     nd = Ambit::Generator.new
     i = 0;
-    a = nd.choose(1..3)
+    nd.choose(1..3)             # just to have an earlier choice
     nd.mark
     b = nd.choose([1, 2, 3])
     c = nd.choose([1, 2, 3])
@@ -69,7 +69,7 @@ class TestAmbit < Test::Unit::TestCase
   end
 
   def test_unmark_all
-    a = Ambit::choose(1..3)
+    Ambit::choose(1..3)             # just to have an earlier choice
     Ambit::mark
     b = Ambit::choose(1..3)
     Ambit::unmark_all!
@@ -81,7 +81,7 @@ class TestAmbit < Test::Unit::TestCase
   end
 
   def test_unmark
-    a = Ambit::choose(1..3)
+    Ambit::choose(1..3)             # just to have an earlier choice
     Ambit::mark
     Ambit::unmark!
     # if we hadn't unmarked here, a cut would leave us choices
