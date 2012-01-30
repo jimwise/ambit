@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2011 Jim Wise
 # License::   2-clause BSD-Style (see LICENSE[link:files/LICENSE.html])
 
-require 'continuation' if  RUBY_VERSION !~ /^1\.8/ 
+require 'continuation' unless RUBY_VERSION.start_with?("1.8")
 
 module Ambit
 
