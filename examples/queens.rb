@@ -68,7 +68,7 @@ O = Alternator.new ".", " "
 # return a blank board of a given size, as an array of N strings of length N
 def empty_board n
   (1..n).collect do |i|
-    ((i+1).odd? ? O : E).take(n).to_s
+    ((i+1).odd? ? O : E).take(n).join ""
   end
 end
 # board is a board in the above format (array where a[i] is the column
@@ -93,6 +93,7 @@ end
 # show_board (1..8).to_a
 # puts ""
 # show_board [1, 3, 5, 7, 2, 4, 6, 8]
+# show_board([1,2])
 raise "board_to_s failed" unless board_to_s([1,2]) == "Q.\n.Q"
 
 # tests:
