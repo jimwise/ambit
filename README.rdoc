@@ -14,7 +14,7 @@ branch cut.
 == REQUIREMENTS:
 
 <b>This code will not work in JRuby or MacRuby (no callcc).  It is tested
-(and should work fine) in Ruby 1.8.7 and 1.9.3.</b>
+(and should work fine) in Ruby 1.8.7, 1.9.3, and 2.0.0.</b>
 
 == INSTALL:
 

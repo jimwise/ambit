@@ -1,8 +1,12 @@
+=== 0.13 / 2013-03-29
+
 * Fix output of eight queens example under Ruby 1.9.
 
 * Clean up how we detect what Ruby version we are running under (used to
   detect if we have to get callcc from a stdlib (1.9 and above) or if it's
   a builtin (1.8).
+
+* Note support for Ruby 2.0.0.
 
 === 0.12 / 2012-01-30
 

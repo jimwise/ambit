@@ -9,7 +9,7 @@ require 'continuation' unless RUBY_VERSION.start_with?("1.8")
 
 module Ambit
 
-  VERSION = '0.12'
+  VERSION = '0.13'
 
   # A ChoicesExhausted exception is raised if the outermost choose invocation of
   # a Generator has run out of choices, indicating that no (more) solutions are possible.
